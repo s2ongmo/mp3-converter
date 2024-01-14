@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>오디오 파일 변환기</title>
+</head>
+<body>
+    <h2>오디오 파일 변환기</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="audioFile" accept="audio/*" required>
+        <select name="format">
+            <option value="mp3">MP3</option>
+            <option value="wav">WAV</option>
+            <option value="flac">FLAC</option>
+            <option value="ogg">OGG</option>
+            <!-- 여기에 추가 포맷을 넣을 수 있습니다 -->
+        </select>
+        <button type="submit">변환하기</button>
+    </form>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            fetch('/convert', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                // 변환된 파일 다운로드
+                let url = window.URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = 'converted_audio.' + formData.get('format');
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
